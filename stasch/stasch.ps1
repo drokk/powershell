@@ -6,13 +6,13 @@ Param (
 
 
 
-Function Get-Hashx([switch] $file, [String] $String,$HashName = "MD5") 
+Function Get-Hashx([switch] $file, [String] $String,$HashName = "SHA1") 
 { 
     $StringBuilder = New-Object System.Text.StringBuilder
     
     if ($file) # if we are sending a file location to the the function then we have to open the file to gather contents so we can create a hash of the content 
         {
-            $file_content = [System.IO.File]::Open($filename, "open", "read") # reads the file 
+            $file_content = [System.IO.File]::Open($String, "open", "read") # reads the file 
             
             [System.Security.Cryptography.HashAlgorithm]::Create($HashName).ComputeHash($file_content)|%{ 
                 [Void]$StringBuilder.Append($_.ToString("x2")) 
@@ -27,7 +27,6 @@ Function Get-Hashx([switch] $file, [String] $String,$HashName = "MD5")
         }
     $StringBuilder.ToString() 
 }
-
 # function copied from Technet Script Gallery 
 #http://jongurgul.com/blog/get-stringhash-get-filehash/ 
 
