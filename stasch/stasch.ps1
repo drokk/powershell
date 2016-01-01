@@ -5,6 +5,7 @@ Param (
 )
 
 
+<<<<<<< HEAD
 # function copied from Technet Script Gallery 
 #http://jongurgul.com/blog/get-stringhash-get-filehash/ 
 Function Get-StringHash([String] $String,$HashName = "MD5") 
@@ -43,6 +44,32 @@ Function shasum ([switch]$md5,[switch]$sha256,$filename)
 }
 
 # this function looks through the old file inventory and detects any changes 
+# this function is a modified version of http://jongurgul.com/blog/get-stringhash-get-filehash/ 
+Function Get-Hashx([switch] $file, [String] $String,$HashName = "SHA1") 
+{ 
+    $StringBuilder = New-Object System.Text.StringBuilder
+    
+    if ($file) # if we are sending a file location to the the function then we have to open the file to gather contents so we can create a hash of the content 
+        {
+            $file_content = [System.IO.File]::Open($String, "open", "read") # reads the file 
+            
+            [System.Security.Cryptography.HashAlgorithm]::Create($HashName).ComputeHash($file_content)|%{ 
+                [Void]$StringBuilder.Append($_.ToString("x2")) 
+            }    
+            
+            $file_content.dispose() # closes the file 
+    
+        }  else {
+                [System.Security.Cryptography.HashAlgorithm]::Create($HashName).ComputeHash([System.Text.Encoding]::UTF8.GetBytes($String))|%{ 
+                    [Void]$StringBuilder.Append($_.ToString("x2")) 
+                }    
+        }
+    $StringBuilder.ToString() 
+}
+
+# this function looks through the old file inventory and detects any changes 
+
+>>>>>>> refs/heads/merge-hash-functions
 Function record_search ($record,$old_records)
 {
     
@@ -73,6 +100,10 @@ foreach ($old_record in $old_records) {
 }
 
 # this function finds inventory changes in the new and old file inventory (ie file additions and deletions)
+<<<<<<< HEAD
+=======
+
+>>>>>>> refs/heads/merge-hash-functions
 Function file_inventory_check($new, $old)
 {
  $results = Compare-Object $new.id $old.id 
@@ -98,14 +129,23 @@ Function file_inventory_check($new, $old)
 
 $directory = Get-ChildItem $path -recurse
 
+<<<<<<< HEAD
 if (Test-Path $datafile){ $old_file_inventory = Import-Csv $home\$datafile}
+=======
+if (Test-Path $home\$datafile){ $old_file_inventory = Import-Csv $home\$datafile}
+>>>>>>> refs/heads/merge-hash-functions
 
 $files =  $directory | where {($_.extension -eq '.ps1' -or $_.extension -eq '.exe' -or $_.extension -eq ".dll" -or $_.extension -eq ".config")} # finds all files with exes in user supplied path. 
 $current_file_inventory = @() 
 foreach ($file in $files) {
     $file_objects = New-Object psobject
+<<<<<<< HEAD
     $hash_id = Get-StringHash -String $file.FullName
     $hash_signature = shasum -filename $file.Fullname  
+=======
+    $hash_id = Get-Hashx -String $file.FullName
+    $hash_signature = Get-Hashx -file -String $file.Fullname  
+>>>>>>> refs/heads/merge-hash-functions
     #Write-Host $hash_id, $file.FullName, $hash_signature
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name id -Value $hash_id 
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name file_name -Value $file.FullName
