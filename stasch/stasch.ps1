@@ -40,8 +40,6 @@ foreach ($old_record in $old_records) {
     $old_id = $old_record.id 
     $old_signature = $old_record.signature
     $old_file_name = $old_record.file_name  
-#    Write-Host $new_id, $old_id
-#    Write-Host $new_signature, $old_signature 
     if (($old_signature -cnotcontains $new_signature) -and ($old_id -ccontains $new_id))
         {Write-Host "$old_file_name has changed"} 
     elseif (($old_signature -contains $new_signature) -and ($old_id -cnotcontains $new_id)) 
@@ -54,7 +52,7 @@ foreach ($old_record in $old_records) {
             if ($known_dupe -eq 0)
             {{Write-Host "$new_file_name may be a copy of $old_file_name"}}
         }
-#    elsif  (($old_signature -cn))
+        
 }
 
 }
@@ -94,9 +92,9 @@ $current_file_inventory = @()
 foreach ($file in $files) {
     $file_objects = New-Object psobject
 
-    $hash_id = Get-Hashx -String $file.FullName
-    $hash_signature = Get-Hashx -file -String $file.Fullname  
-    #Write-Host $hash_id, $file.FullName, $hash_signature
+    $hash_id = Get-Hashx -String $file.FullName # create a SHA1 hash of the the path to the file 
+    $hash_signature = Get-Hashx -file -String $file.Fullname  # create a SHA1 hash of content of the file 
+    # Write-Host $hash_id, $file.FullName, $hash_signature
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name id -Value $hash_id 
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name file_name -Value $file.FullName
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name signature -Value $hash_signature
