@@ -5,7 +5,7 @@ Param (
 )
 
 
-
+# new 
 Function Get-Hashx([switch] $file, [String] $String,$HashName = "SHA1") 
 { 
     $StringBuilder = New-Object System.Text.StringBuilder
@@ -27,6 +27,7 @@ Function Get-Hashx([switch] $file, [String] $String,$HashName = "SHA1")
         }
     $StringBuilder.ToString() 
 }
+
 # function copied from Technet Script Gallery 
 #http://jongurgul.com/blog/get-stringhash-get-filehash/ 
 
@@ -95,7 +96,7 @@ foreach ($old_record in $old_records) {
 
 }
 
-# this function finds inventory changes in the new and old file inventory (ie file additions and deletions)
+# this function finds  inventory changes in the new and old file inventory (ie file additions and deletions)
 Function file_inventory_check($new, $old)
 {
  $results = Compare-Object $new.id $old.id 
@@ -121,7 +122,7 @@ Function file_inventory_check($new, $old)
 
 $directory = Get-ChildItem $path -recurse
 
-if (Test-Path $datafile){ $old_file_inventory = Import-Csv $home\$datafile}
+if (Test-Path $home\$datafile){ $old_file_inventory = Import-Csv $home\$datafile}
 
 $files =  $directory | where {($_.extension -eq '.ps1' -or $_.extension -eq '.exe' -or $_.extension -eq ".dll" -or $_.extension -eq ".config")} # finds all files with exes in user supplied path. 
 $current_file_inventory = @() 
