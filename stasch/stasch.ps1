@@ -98,7 +98,7 @@ Function file_inventory_check($new, $old)
 
 $directory = Get-ChildItem $path -recurse
 
-if (Test-Path $datafile){ $old_file_inventory = Import-Csv $datafile}
+if (Test-Path $datafile){ $old_file_inventory = Import-Csv $home\$datafile}
 
 $files =  $directory | where {($_.extension -eq '.ps1' -or $_.extension -eq '.exe' -or $_.extension -eq ".dll" -or $_.extension -eq ".config")} # finds all files with exes in user supplied path. 
 $current_file_inventory = @() 
@@ -117,6 +117,6 @@ foreach ($file in $files) {
 # Compare-Object $old_file_inventory $current_file_inventory -Passthru 
 if($old_file_inventory) {file_inventory_check -new $current_file_inventory -old $old_file_inventory} 
 
-$current_file_inventory | Export-Csv -NoTypeInformation $datafile
+$current_file_inventory | Export-Csv -NoTypeInformation $home\$datafile
 
 
