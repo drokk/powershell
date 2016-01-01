@@ -5,7 +5,7 @@ Param (
 )
 
 
-# new 
+# this function is a modified version of http://jongurgul.com/blog/get-stringhash-get-filehash/ 
 Function Get-Hashx([switch] $file, [String] $String,$HashName = "SHA1") 
 { 
     $StringBuilder = New-Object System.Text.StringBuilder
@@ -28,45 +28,8 @@ Function Get-Hashx([switch] $file, [String] $String,$HashName = "SHA1")
     $StringBuilder.ToString() 
 }
 
-# function copied from Technet Script Gallery 
-#http://jongurgul.com/blog/get-stringhash-get-filehash/ 
-
-Function Get-StringHash([String] $String,$HashName = "MD5") 
-{ 
-    $StringBuilder = New-Object System.Text.StringBuilder 
-    [System.Security.Cryptography.HashAlgorithm]::Create($HashName).ComputeHash([System.Text.Encoding]::UTF8.GetBytes($String))|%{ 
-        [Void]$StringBuilder.Append($_.ToString("x2")) 
-    } 
-    $StringBuilder.ToString() 
-}
-
-
-# created a function of an old script that spat out cryptographic sums of files. 
-Function shasum ([switch]$md5,[switch]$sha256,$filename) 
-{
-    $sha1object = new-Object System.Security.Cryptography.SHA1Managed
-    $md5object = new-Object System.Security.Cryptography.MD5CryptoServiceProvider
-    $sha256object = new-Object System.Security.Cryptography.SHA256Managed 
-    $file = [System.IO.File]::Open($filename, "open", "read")
-    $output = New-Object System.Text.StringBuilder 
-    if ($md5) { 
-        $md5object.ComputeHash($file) | %{ 
-                [Void]$output.Append($_.ToString("x2"))} 
-    } elseif ($sha256) { 
-    
-        $sha256object.ComputeHash($file) | %{ 
-                [Void]$output.Append($_.ToString("x2"))} 
-    } else { 
-    
-        $sha1object.ComputeHash($file) | %{ 
-                [Void]$output.Append($_.ToString("x2"))} 
-    } 
- 
-    $file.Dispose()
-    $output.ToString() 
-}
-
 # this function looks through the old file inventory and detects any changes 
+
 Function record_search ($record,$old_records)
 {
     
@@ -96,7 +59,8 @@ foreach ($old_record in $old_records) {
 
 }
 
-# this function finds  inventory changes in the new and old file inventory (ie file additions and deletions)
+# this function finds inventory changes in the new and old file inventory (ie file additions and deletions)
+
 Function file_inventory_check($new, $old)
 {
  $results = Compare-Object $new.id $old.id 
@@ -128,8 +92,8 @@ $files =  $directory | where {($_.extension -eq '.ps1' -or $_.extension -eq '.ex
 $current_file_inventory = @() 
 foreach ($file in $files) {
     $file_objects = New-Object psobject
-    $hash_id = Get-StringHash -String $file.FullName
-    $hash_signature = shasum -filename $file.Fullname  
+    $hash_id = Get-Hashx -String $file.FullName
+    $hash_signature = Get-Hashx -file -String $file.Fullname  
     #Write-Host $hash_id, $file.FullName, $hash_signature
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name id -Value $hash_id 
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name file_name -Value $file.FullName
