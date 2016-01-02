@@ -86,7 +86,7 @@ $directory = Get-ChildItem $path -Recurse
 
 if (Test-Path $home\$datafile){ $old_file_inventory = Import-Csv $home\$datafile} #only load the datafile if it exists. 
 
-$files =  $directory | where {($_.extension -eq '.ps1' -or $_.extension -eq '.exe' -or $_.extension -eq ".dll" -or $_.extension -eq ".config" -or $_.Attributes -contains "Directory")} # finds all files with exes in user supplied path. 
+$files =  $directory | where {($_.extension -eq '.ps1' -or $_.extension -eq '.exe' -or $_.extension -eq ".dll" -or $_.extension -eq ".config" -or $_.Attributes -contains "Directory")} # this needs to be fixed 
 #$folders = $directory | where {($_.Attributes -contains "Directory")}
 $current_file_inventory = @() 
 foreach ($file in $files) {
