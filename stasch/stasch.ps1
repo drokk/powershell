@@ -86,14 +86,19 @@ $directory = Get-ChildItem $path -Recurse
 
 if (Test-Path $home\$datafile){ $old_file_inventory = Import-Csv $home\$datafile} #only load the datafile if it exists. 
 
-$files =  $directory | where {($_.extension -eq '.ps1' -or $_.extension -eq '.exe' -or $_.extension -eq ".dll" -or $_.extension -eq ".config")} # finds all files with exes in user supplied path. 
+$files =  $directory | where {($_.extension -eq '.ps1' -or $_.extension -eq '.exe' -or $_.extension -eq ".dll" -or $_.extension -eq ".config" -or $_.Attributes -contains "Directory")} # finds all files with exes in user supplied path. 
 #$folders = $directory | where {($_.Attributes -contains "Directory")}
 $current_file_inventory = @() 
 foreach ($file in $files) {
     $file_objects = New-Object psobject
 
     $hash_id = Get-Hashx -String $file.FullName # create a SHA1 hash of the the path to the file 
-    $hash_signature = Get-Hashx -file -String $file.Fullname  # create a SHA1 hash of content of the file 
+    
+    if ($file.Attributes -contains "Directory")
+    {$hash_signature = $hash_id} # temporary fix for directory supports
+    else
+    {$hash_signature = Get-Hashx -file -String $file.Fullname}  # create a SHA1 hash of content of the file 
+    
     # Write-Host $hash_id, $file.FullName, $hash_signature
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name id -Value $hash_id 
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name file_name -Value $file.FullName
