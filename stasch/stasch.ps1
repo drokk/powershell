@@ -82,7 +82,17 @@ Function file_inventory_check($new, $old)
 }
 
 
-$directory = Get-ChildItem $path -Recurse
+$uri = New-Object System.URI($path)
+if($uri.Host)
+    {$host_id = $uri.Host} # capture the remote machines name 
+    else
+    {$host_id = $(gci env:/Computername).value} # capture the local machine 
+
+$path_id = Get-Hashx $path # need unique id for the file tree 
+
+$directory = Get-ChildItem $path -Recurse #capture the desired file tree
+
+$datafile = $host_id + "-" + $path_id + "-" + $datafile
 
 if (Test-Path $home\$datafile){ $old_file_inventory = Import-Csv $home\$datafile} #only load the datafile if it exists. 
 
@@ -95,11 +105,11 @@ foreach ($file in $files) {
     $hash_id = Get-Hashx -String $file.FullName # create a SHA1 hash of the the path to the file 
     
     if ($file.Attributes -contains "Directory")
-    {$hash_signature = $hash_id} # temporary fix for directory supports
-    else
-    {$hash_signature = Get-Hashx -file -String $file.Fullname}  # create a SHA1 hash of content of the file 
+        {$hash_signature = $hash_id} # temporary fix for directory support
+       else
+        {$hash_signature = Get-Hashx -file -String $file.Fullname}  # create a SHA1 hash of content of the file 
     
-    # Write-Host $hash_id, $file.FullName, $hash_signature
+    
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name id -Value $hash_id 
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name file_name -Value $file.FullName
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name signature -Value $hash_signature
@@ -107,7 +117,7 @@ foreach ($file in $files) {
     $current_file_inventory += $file_objects 
 }
 
-# Compare-Object $old_file_inventory $current_file_inventory -Passthru 
+
 if($old_file_inventory) {file_inventory_check -new $current_file_inventory -old $old_file_inventory} 
 
 $current_file_inventory | Export-Csv -NoTypeInformation $home\$datafile
