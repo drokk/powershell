@@ -1,3 +1,28 @@
+<#
+.Synopsis 
+
+creates file system inventories. 
+
+.Description 
+
+Inventories a file tree so you can detect changes at a later date, saves the state in 
+file <name of the server>-<hash of root of the file system>-hash-table in the users home
+folder. 
+
+.PARAMETER path
+
+root of the file tree that needs to be inventoried. 
+
+.PARAMETER datafile
+
+name of the data file saved in the users home folder, the default is hash-table
+
+.PARAMETER compare
+
+currently unused
+
+
+#>
 Param (
     [string]$path,
     [string]$datafile= "hash-table",
