@@ -1,3 +1,28 @@
+<#
+.Synopsis 
+
+creates file system inventories. 
+
+.Description 
+
+Inventories a file tree so you can detect changes at a later date, saves the state in 
+file <name of the server>-<hash of root of the file system>-hash-table in the users home
+folder. 
+
+.PARAMETER path
+
+root of the file tree that needs to be inventoried. 
+
+.PARAMETER datafile
+
+name of the data file saved in the users home folder, the default is hash-table
+
+.PARAMETER compare
+
+currently unused
+
+
+#>
 Param (
     [string]$path,
     [string]$datafile= "hash-table",
@@ -82,17 +107,32 @@ Function file_inventory_check($new, $old)
 }
 
 
-$directory = Get-ChildItem $path -Recurse
+$uri = New-Object System.URI($path)
+if($uri.Host)
+    {$host_id = $uri.Host} # capture the remote machines name 
+    else
+    {$host_id = $(gci env:/Computername).value} # capture the local machine 
+
+$path_id = Get-Hashx $path # need unique id for the file tree 
+
+$directory = Get-ChildItem $path -Recurse #capture the desired file tree
+
+$datafile = $host_id + "-" + $path_id + "-" + $datafile
 
 if (Test-Path $home\$datafile){ $old_file_inventory = Import-Csv $home\$datafile} #only load the datafile if it exists. 
 
+<<<<<<< HEAD
 $files =  $directory | where {($_.extension -eq '.ps1' -or $_.extension -eq '.exe' -or $_.extension -eq ".dll" -or $_.extension -eq ".config" -or $_.Attributes -contains "Directory")} # this needs to be fixed 
+=======
+$files =  $directory | where {($_.extension -eq '.ps1' -or $_.extension -eq '.exe' -or $_.extension -eq ".dll" -or $_.extension -eq ".config" -or $_.Attributes -contains "Directory")} # finds all files with exes in user supplied path. 
+>>>>>>> origin/folder-support
 #$folders = $directory | where {($_.Attributes -contains "Directory")}
 $current_file_inventory = @() 
 foreach ($file in $files) {
     $file_objects = New-Object psobject
 
     $hash_id = Get-Hashx -String $file.FullName # create a SHA1 hash of the the path to the file 
+<<<<<<< HEAD
     if ($file.Attributes -contains "Directory")
     {
     $hash_signature = $hash_id # we can't get contents out of a directory so we just id for the signature for the time being     
@@ -100,6 +140,15 @@ foreach ($file in $files) {
     $hash_signature = Get-Hashx -file -String $file.Fullname  # create a SHA1 hash of content of the file 
     }
     # Write-Host $hash_id, $file.FullName, $hash_signature
+=======
+    
+    if ($file.Attributes -contains "Directory")
+        {$hash_signature = $hash_id} # temporary fix for directory support
+       else
+        {$hash_signature = Get-Hashx -file -String $file.Fullname}  # create a SHA1 hash of content of the file 
+    
+    
+>>>>>>> origin/folder-support
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name id -Value $hash_id 
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name file_name -Value $file.FullName
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name signature -Value $hash_signature
@@ -107,7 +156,7 @@ foreach ($file in $files) {
     $current_file_inventory += $file_objects 
 }
 
-# Compare-Object $old_file_inventory $current_file_inventory -Passthru 
+
 if($old_file_inventory) {file_inventory_check -new $current_file_inventory -old $old_file_inventory} 
 
 $current_file_inventory | Export-Csv -NoTypeInformation $home\$datafile
