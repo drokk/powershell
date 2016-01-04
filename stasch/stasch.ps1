@@ -68,16 +68,16 @@ foreach ($old_record in $old_records) {
     #Write-Host $old_signature $new_signature
     if (($old_signature -cnotcontains $new_signature) -and ($old_id -ccontains $new_id))
         {Write-Host "$old_file_name has changed"} 
-    elseif (($old_signature -ccontains $new_signature) -and ($old_id -cnotcontains $new_id)) 
+    elseif (($old_signature -contains $new_signature) -and ($old_id -notcontains $new_id)) 
         {
-            # need to traverse the known file table again to check if the dupe files is already known. 
-            foreach ($old_record in $old_records) { 
-                if (($old_record.signature -ccontains $new_signature) -and ($old_record.id -ccontains $new_id))
+            # need to traverse the known file table again to check if the dupe files is already known.
+            $known_dupe = 0  
+            foreach ($old_record in $old_records) {
+                if (($old_record.signature -contains $new_signature) -and ($old_record.id -contains $new_id))
                     {$known_dupe = 1}
-            if (!($known_dupe))
-            {Write-Host "$new_file_name may be a copy of $old_file_name"}
-        }
-        
+            }
+            if ($known_dupe -eq 0)
+                {Write-Host "$new_file_name may be a copy of $old_file_name"}
 }
 
 }
