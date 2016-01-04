@@ -31,7 +31,7 @@ Param (
 
 
  
-# this function is a modified version of http://jongurgul.com/blog/get-stringhash-get-filehash/ 
+#  this function is a modified version of http://jongurgul.com/blog/get-stringhash-get-filehash/ 
 Function Get-Hashx([switch] $file, [String] $String,$HashName = "SHA1") 
 { 
     $StringBuilder = New-Object System.Text.StringBuilder
