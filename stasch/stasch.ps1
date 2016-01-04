@@ -31,7 +31,7 @@ Param (
 
 
  
-# this function is a modified version of http://jongurgul.com/blog/get-stringhash-get-filehash/ 
+#  this function is a modified version of http://jongurgul.com/blog/get-stringhash-get-filehash/ 
 Function Get-Hashx([switch] $file, [String] $String,$HashName = "SHA1") 
 { 
     $StringBuilder = New-Object System.Text.StringBuilder
@@ -121,18 +121,16 @@ $datafile = $host_id + "-" + $path_id + "-" + $datafile
 
 if (Test-Path $home\$datafile){ $old_file_inventory = Import-Csv $home\$datafile} #only load the datafile if it exists. 
 
-<<<<<<< HEAD
+
 $files =  $directory | where {($_.extension -eq '.ps1' -or $_.extension -eq '.exe' -or $_.extension -eq ".dll" -or $_.extension -eq ".config" -or $_.Attributes -contains "Directory")} # this needs to be fixed 
-=======
-$files =  $directory | where {($_.extension -eq '.ps1' -or $_.extension -eq '.exe' -or $_.extension -eq ".dll" -or $_.extension -eq ".config" -or $_.Attributes -contains "Directory")} # finds all files with exes in user supplied path. 
->>>>>>> origin/folder-support
+
 #$folders = $directory | where {($_.Attributes -contains "Directory")}
 $current_file_inventory = @() 
 foreach ($file in $files) {
     $file_objects = New-Object psobject
 
     $hash_id = Get-Hashx -String $file.FullName # create a SHA1 hash of the the path to the file 
-<<<<<<< HEAD
+
     if ($file.Attributes -contains "Directory")
     {
     $hash_signature = $hash_id # we can't get contents out of a directory so we just id for the signature for the time being     
@@ -140,15 +138,9 @@ foreach ($file in $files) {
     $hash_signature = Get-Hashx -file -String $file.Fullname  # create a SHA1 hash of content of the file 
     }
     # Write-Host $hash_id, $file.FullName, $hash_signature
-=======
+
     
-    if ($file.Attributes -contains "Directory")
-        {$hash_signature = $hash_id} # temporary fix for directory support
-       else
-        {$hash_signature = Get-Hashx -file -String $file.Fullname}  # create a SHA1 hash of content of the file 
-    
-    
->>>>>>> origin/folder-support
+
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name id -Value $hash_id 
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name file_name -Value $file.FullName
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name signature -Value $hash_signature
