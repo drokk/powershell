@@ -144,7 +144,7 @@ foreach ($file in $files) {
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name id -Value $hash_id 
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name file_name -Value $file.FullName
     Add-Member -InputObject $file_objects -MemberType NoteProperty -Name signature -Value $hash_signature
-    if (($old_file_inventory -and !($file.Attributes -contains "Directory"))) {record_search -record $file_objects -old_records $old_file_inventory} 
+    if ((($old_file_inventory) -and ($file.Attributes -notcontains "Directory"))) {record_search -record $file_objects -old_records $old_file_inventory} 
     $current_file_inventory += $file_objects 
 }
 
