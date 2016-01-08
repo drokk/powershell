@@ -18,6 +18,12 @@ if ($hostname -like "*@*")
         $hostname = $options[1]
     }
     
+$output = Resolve-DnsName $hostname -ErrorVariable notvalid -ErrorAction SilentlyContinue
+
+if ($notvalid)
+    {Write-Host $hostname is a valid hostname. ; exit }
+
+
 New-SshSession -ComputerName $hostname -Username $username 
 
 Enter-SshSession -ComputerName $hostname
