@@ -47,4 +47,4 @@ if (!$command)
 
 
 
-Remove-SshSession -ComputerName $hostname
+$output = Remove-SshSession -ComputerName $hostname
